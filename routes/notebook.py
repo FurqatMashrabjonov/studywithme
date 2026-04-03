@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import APIRouter
 from fastapi import Depends
-from app.models.notebook import Notebook
+from app.models import Notebook
 from starlette import status
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from app.dependencies.route_dependency import get_valid_notebook

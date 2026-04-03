@@ -2,17 +2,17 @@ import uuid
 from uuid import UUID
 from .base_repository import BaseRepository
 from sqlalchemy import desc
-from app.models.notebook import Notebook
+from app.models import Note
 from app.schemes.notebook_scheme import NotebookDto, NotebookUpdateDto
 from datetime import datetime, timezone
 
 
 class NoteRepository(BaseRepository):
-    model = Notebook
+    model = Note
 
-    async def get_by_user_id(self, user_id: int):
+    async def get_by_notebook_uid(self, notebook_id: int):
         notebooks = await self._db.execute(
-            self._without_trashed().where(self.model.user_id == user_id)
+            self._without_trashed().where(self.model.id == notebook_id)
         )
 
         return notebooks.scalars().all()
@@ -54,7 +54,7 @@ class NoteRepository(BaseRepository):
         result = await self._db.execute(query)
         return result.scalar_one_or_none()
 
-    async def update(self, db_notebook: Notebook, dto: NotebookUpdateDto):
+    async def update(self, db_notebook: Note, dto: NotebookUpdateDto):
         update_data = dto.model_dump(exclude_unset=True)
 
         for field, value in update_data.items():
@@ -64,7 +64,7 @@ class NoteRepository(BaseRepository):
 
         return db_notebook
 
-    async def delete(self, notebook: Notebook):
+    async def delete(self, notebook: Note):
         notebook.deleted_at = datetime.now(timezone.utc)
 
         await self._db.commit()

@@ -2,7 +2,7 @@ import uuid
 from uuid import UUID
 from .base_repository import BaseRepository
 from sqlalchemy import desc
-from app.models.notebook import Notebook
+from app.models import Notebook
 from app.schemes.notebook_scheme import NotebookDto, NotebookUpdateDto
 from datetime import datetime, timezone
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from app.models.notebook import Notebook
+    from app.models import Notebook
 
 
 class User(Base):

@@ -6,7 +6,7 @@ from app.schemes.notebook_scheme import NotebookDto
 from app.dependencies.repository_dependency import NotebookRepositoryDep
 from app.core.exceptions import AppException
 from app.schemes.notebook_scheme import NotebookUpdateRequest, NotebookUpdateDto
-from app.models.notebook import Notebook
+from app.models import Notebook
 
 
 class NotebookService(BaseService):

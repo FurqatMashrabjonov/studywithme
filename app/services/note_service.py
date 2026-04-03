@@ -1,19 +1,18 @@
 import uuid
 from starlette import status
-
 from .base_service import BaseService
 from app.schemes.notebook_scheme import NotebookDto
-from app.dependencies.repository_dependency import NotebookRepositoryDep
+from app.dependencies.repository_dependency import NoteRepositoryDep
 from app.core.exceptions import AppException
 from app.schemes.notebook_scheme import NotebookUpdateRequest, NotebookUpdateDto
 
 
 class NoteService(BaseService):
-    def __init__(self, repository: NotebookRepositoryDep):
+    def __init__(self, repository: NoteRepositoryDep):
         self.repository = repository
 
-    async def get_user_notes(self, user_id: int):
-        notebooks = await self.repository.get_by_user_id(user_id)
+    async def get_notes_by_notebook(self, notebook_id: int):
+        notebooks = await self.repository.get_by_notebook_uid(notebook_id)
 
         return notebooks
 
