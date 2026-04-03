@@ -1,16 +1,14 @@
-import uuid
 from fastapi import APIRouter
 from fastapi import Depends
-
 from starlette import status
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 
 from app.core.http import success_response
 from app.dependencies.security_dependency import get_request_user
 from app.dependencies.service_dependency import NoteServiceDep
-from app.models import Notebook
+from app.models import Notebook, Note
 from app.schemes.note_scheme import NoteListResource, NoteResource, NoteUpdateRequest
-from app.dependencies.route_dependency import get_valid_notebook
+from app.dependencies.route_dependency import get_valid_notebook, get_valid_note
 
 router = APIRouter()
 
@@ -27,9 +25,7 @@ async def index(
 
 
 @router.get("/{note_id}")
-async def show(id: int, service: NoteServiceDep, user=Depends(get_request_user)):
-    note = await service.get_note_details(id, user.id)
-
+async def show(note: Note = Depends(get_valid_note)):
     return success_response(
         data=NoteResource.model_validate(note), status_code=HTTP_200_OK
     )

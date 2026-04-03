@@ -16,15 +16,15 @@ class NoteService(BaseService):
 
         return notebooks
 
-    async def get_notebook_details(self, uid: uuid.UUID, user_id: int):
-        notebook = await self.repository.find_by_uid_and_user_id(uid, user_id)
+    async def get_note_details(self, note_id: int, notebook_id: int):
+        note = await self.repository.find_by_id_and_notebook_id(note_id, notebook_id)
 
-        if notebook is None:
+        if note is None:
             raise AppException(
-                message="Daftar mavjud emas", status_code=status.HTTP_404_NOT_FOUND
+                message="Qayd mavjud emas", status_code=status.HTTP_404_NOT_FOUND
             )
 
-        return notebook
+        return note
 
     async def create(self, user_id: int):
         uid = uuid.uuid4()

@@ -17,9 +17,13 @@ class NoteRepository(BaseRepository):
 
         return notebooks.scalars().all()
 
-    async def find_by_uid(self, uid: uuid.UUID):
+    async def find_by_id_and_notebook_id(self, note_id: int, notebook_id: int):
         notebooks = await self._db.execute(
-            self._without_trashed().where(self.model.uid == uid)
+            self._without_trashed()
+            .where(
+                self.model.id == note_id,
+                self.model.notebook_id == notebook_id
+            )
         )
 
         return notebooks.scalar_one_or_none()
