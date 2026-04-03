@@ -6,14 +6,13 @@ from app.schemes.notebook_scheme import NotebookDto
 from app.dependencies.repository_dependency import NotebookRepositoryDep
 from app.core.exceptions import AppException
 from app.schemes.notebook_scheme import NotebookUpdateRequest, NotebookUpdateDto
-from app.models.notebook import Notebook
 
 
-class NotebookService(BaseService):
+class NoteService(BaseService):
     def __init__(self, repository: NotebookRepositoryDep):
         self.repository = repository
 
-    async def get_user_notebooks(self, user_id: int):
+    async def get_user_notes(self, user_id: int):
         notebooks = await self.repository.get_by_user_id(user_id)
 
         return notebooks
@@ -42,14 +41,32 @@ class NotebookService(BaseService):
 
         return notebook
 
-    async def update_notebook(self, notebook: Notebook, request: NotebookUpdateRequest):
+    async def update_notebook(
+        self, uid: uuid.UUID, user_id: int, request: NotebookUpdateRequest
+    ):
+        db_notebook = await self.repository.find_by_uid_and_user_id(
+            uid=uid, user_id=user_id
+        )
+
+        if db_notebook is None:
+            raise AppException(
+                message="Daftar mavjud emas", status_code=status.HTTP_404_NOT_FOUND
+            )
+
         notebook = await self.repository.update(
-            notebook, NotebookUpdateDto(name=request.name)
+            db_notebook, NotebookUpdateDto(name=request.name)
         )
 
         return notebook
 
-    async def delete_notebook(self, notebook: Notebook):
+    async def delete_notebook(self, uid: uuid.UUID, user_id: int):
+        notebook = await self.repository.find_by_uid_and_user_id(uid, user_id)
+
+        if notebook is None:
+            raise AppException(
+                message="Daftar mavjud emas", status_code=status.HTTP_404_NOT_FOUND
+            )
+
         await self.repository.delete(notebook)
 
         return None

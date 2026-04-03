@@ -7,7 +7,7 @@ from app.schemes.notebook_scheme import NotebookDto, NotebookUpdateDto
 from datetime import datetime, timezone
 
 
-class NotebookRepository(BaseRepository):
+class NoteRepository(BaseRepository):
     model = Notebook
 
     async def get_by_user_id(self, user_id: int):

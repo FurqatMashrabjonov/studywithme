@@ -23,16 +23,14 @@ class UserRepository(BaseRepository):
 
     async def get_user_by_email(self, email: str):
         result = await self._db.execute(
-            self._without_trashed()
-            .where(self.model.email == email)
+            self._without_trashed().where(self.model.email == email)
         )
 
         return result.scalar_one_or_none()
 
-    async def get_user_by_id(self, user_id:int):
+    async def get_user_by_id(self, user_id: int):
         result = await self._db.execute(
-            self._without_trashed()
-            .where(self.model.id == user_id)
+            self._without_trashed().where(self.model.id == user_id)
         )
 
         return result.scalar_one_or_none()

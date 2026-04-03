@@ -1,6 +1,11 @@
 from typing import Any, AsyncGenerator
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine, AsyncAttrs
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+    AsyncAttrs,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import TIMESTAMP, text, MetaData
 from datetime import datetime, timezone
@@ -18,6 +23,7 @@ AsyncSessionLocal = async_sessionmaker(
     class_=AsyncSession,
     expire_on_commit=False,
 )
+
 
 class Base(AsyncAttrs, DeclarativeBase):
     metadata = MetaData(

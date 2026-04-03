@@ -8,6 +8,7 @@ class UserCreateDto(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class UserPublic(BaseModel):
     id: int
     name: str
