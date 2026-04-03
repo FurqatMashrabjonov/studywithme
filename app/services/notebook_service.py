@@ -13,7 +13,7 @@ class NotebookService(BaseService):
         self.repository = repository
 
     async def get_user_notebooks(self, user_id: int):
-        notebooks = await self.repository.find_by_user_id(user_id)
+        notebooks = await self.repository.get_by_user_id(user_id)
 
         return notebooks
 
@@ -42,7 +42,6 @@ class NotebookService(BaseService):
         return notebook
 
     async def update_notebook(self, uid: uuid.UUID, user_id: int, request: NotebookUpdateRequest):
-
         db_notebook = await self.repository.find_by_uid_and_user_id(uid=uid, user_id=user_id)
 
         if db_notebook is None:
@@ -58,4 +57,11 @@ class NotebookService(BaseService):
         return notebook
 
     async def delete_notebook(self, uid: uuid.UUID, user_id: int):
-        await self.repository.delete(uid, user_id)
+        notebook = await self.repository.find_by_uid_and_user_id(uid, user_id)
+
+        if notebook is None:
+            raise AppException(message="Daftar mavjud emas", status_code=status.HTTP_404_NOT_FOUND)
+
+        await self.repository.delete(notebook)
+
+        return None
