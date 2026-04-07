@@ -26,9 +26,13 @@ class NoteService(BaseService):
 
         return note
 
-    async def create(self, notebook_id: int, title: str, content: str):
+    async def create(self, notebook_id: int):
         note = await self.repository.create(
-            NoteDto(title=title, content=content, notebook_id=notebook_id)
+            NoteDto(
+                title='Nomsiz eslatma',
+                content='',
+                notebook_id=notebook_id
+            )
         )
 
         return note
