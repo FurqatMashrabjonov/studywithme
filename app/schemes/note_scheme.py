@@ -11,16 +11,23 @@ class BaseNote(BaseModel):
 class NoteDto(BaseNote):
     title: str
     content: str
+    notebook_id: int
 
 
 # Form Requests
+class NoteCreateRequest(BaseNote):
+    title: str = Field(min_length=1, max_length=100)
+    content: str = Field(min_length=1)
+
+
 class NoteUpdateRequest(BaseNote):
-    name: str | None = Field(default=None, min_length=1, max_length=100)
+    title: str | None = Field(default=None, min_length=1, max_length=100)
     content: str | None = Field(default=None, min_length=1)
 
 
 # Resources
 class NoteListResource(BaseNote):
+    id: int
     title: str
     created_at: datetime
 
@@ -31,5 +38,6 @@ class NoteListResource(BaseNote):
 
 
 class NoteResource(BaseNote):
+    id: int
     title: str
     content: str

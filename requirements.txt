@@ -11,3 +11,4 @@ pydantic
 pyjwt
 pwdlib[argon2]
 arrow
+protobuf
