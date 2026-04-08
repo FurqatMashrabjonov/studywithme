@@ -1,0 +1,1 @@
+1. artifact qidiradigan agent qilish kerak yoki tool, murakkab va verification bilan
