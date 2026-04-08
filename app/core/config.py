@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     ALGORITHM: str
+    GOOGLE_API_KEY: str
 
     @property
     def DATABASE_URL(self):

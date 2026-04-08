@@ -18,6 +18,7 @@ class AgentInterface:
             name=self.name,
             model=self.model,
             instruction=self.instruction,
+            tools=self.tools,
             generate_content_config=self.generate_content_config,
             sub_agents=self.sub_agents
         )

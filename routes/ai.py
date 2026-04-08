@@ -7,7 +7,7 @@ from app.dependencies.route_dependency import get_valid_notebook
 from app.dependencies.security_dependency import get_request_user
 from app.models import User, Notebook
 from app.ai.orchestrator import Orchestrator
-from app.schemes.ai_scheme import AiRequest
+from app.schemes.ai_scheme import AiRequest, StateDelta
 
 load_dotenv()
 router = APIRouter()
@@ -19,7 +19,11 @@ async def chat(
         notebook: Notebook = Depends(get_valid_notebook)
 ):
     orchestrator = Orchestrator(user_id=str(user.id), session_id=str(notebook.uid))
-    res = await orchestrator.call(request.message)
+    state_delta = StateDelta(
+        notebook_id=notebook.id
+    )
+
+    res = await orchestrator.call(request.message, state_delta=state_delta)
 
     return success_response(
         data={

@@ -12,3 +12,4 @@ pyjwt
 pwdlib[argon2]
 arrow
 protobuf
+pillow

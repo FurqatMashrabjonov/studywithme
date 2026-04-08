@@ -3,11 +3,13 @@ from google.adk.apps.llm_event_summarizer import LlmEventSummarizer
 from google.adk.models import Gemini
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
+from google.cloud.aiplatform.telemetry import tool_context_manager
 from google.genai import types
 
 from app.ai.agents.root_agent import RootAgent
 from app.ai.scheme import AgentResponse
 from app.core.config import settings
+from app.schemes.ai_scheme import StateDelta
 
 session_service = DatabaseSessionService(db_url=settings.DATABASE_URL)
 root_agent = RootAgent().get_agent()
@@ -34,7 +36,7 @@ class Orchestrator:
             auto_create_session=True,
         )
 
-    async def call(self, msg: str):
+    async def call(self, msg: str, state_delta: StateDelta):
         content = types.Content(role="user", parts=[types.Part(text=msg)])
         response_text = ""
         token_usage = None
@@ -43,6 +45,7 @@ class Orchestrator:
                 user_id=self.user_id,
                 session_id=self.session_id,
                 new_message=content,
+                state_delta=state_delta.model_dump()
         ):
             if event.is_final_response():
                 if event.content and event.content.parts:

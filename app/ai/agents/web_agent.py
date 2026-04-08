@@ -1,4 +1,5 @@
 from google.adk.tools import google_search
+from google.adk.tools.load_web_page import load_web_page
 
 from .base import AgentInterface
 from google.genai.types import GenerateContentConfig, ToolConfig, FunctionCallingConfig, FunctionCallingConfigMode
@@ -17,7 +18,7 @@ class WebAgent(AgentInterface):
         - Manbalarni ko'rsat va ma'lumotning qanchalik yangiligini bildir
         - Agar ma'lumot topilmasa, foydalanuvchiga aniq ayt va boshqa usulda qidirishni taklif qil
     """
-    tools = [google_search]
+    tools = [google_search, load_web_page]
     generate_content_config = GenerateContentConfig(
         tool_config=ToolConfig(
             function_calling_config=FunctionCallingConfig(
