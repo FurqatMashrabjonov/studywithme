@@ -44,12 +44,20 @@ async def store(service: NoteServiceDep, user=Depends(get_request_user)):
 async def update(
     service: NoteServiceDep,
     request: NoteUpdateRequest,
+    note: Note = Depends(get_valid_note),
     user=Depends(get_request_user),
 ):
-    pass
+    note = await service.update_note(note=note, request=request)
 
+    return success_response(
+        data=NoteResource.model_validate(note)
+    )
 
 @router.delete("/{note_id}")
-async def destroy(service: NoteServiceDep, user=Depends(get_request_user)):
-
+async def destroy(
+        service: NoteServiceDep,
+        note: Note = Depends(get_valid_note),
+        user=Depends(get_request_user)
+):
+    await service.delete_note(note=note)
     return success_response(status_code=status.HTTP_204_NO_CONTENT)
