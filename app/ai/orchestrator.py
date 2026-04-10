@@ -3,13 +3,11 @@ from google.adk.apps.llm_event_summarizer import LlmEventSummarizer
 from google.adk.models import Gemini
 from google.adk.runners import Runner
 from google.adk.sessions import DatabaseSessionService
-from google.cloud.aiplatform.telemetry import tool_context_manager
 from google.genai import types
 
 from app.ai.agents.root_agent import RootAgent
-from app.ai.scheme import AgentResponse
 from app.core.config import settings
-from app.schemes.ai_scheme import StateDelta
+from app.schemes.ai_scheme import StateDelta, AiStreamResponse
 
 session_service = DatabaseSessionService(db_url=settings.DATABASE_URL)
 root_agent = RootAgent().get_agent()
@@ -38,8 +36,6 @@ class Orchestrator:
 
     async def call(self, msg: str, state_delta: StateDelta):
         content = types.Content(role="user", parts=[types.Part(text=msg)])
-        response_text = ""
-        token_usage = None
 
         async for event in self._runner.run_async(
                 user_id=self.user_id,
@@ -47,19 +43,50 @@ class Orchestrator:
                 new_message=content,
                 state_delta=state_delta.model_dump()
         ):
-            if event.is_final_response():
-                if event.content and event.content.parts:
-                    for part in event.content.parts:
-                        if part.text:
-                            response_text = part.text
+            response = ''
+            for part in event.content.parts:
+                if part.function_call:
+                    response = AiStreamResponse(
+                        type= part.function_call.name,
+                        text=f"{part.function_call.name}",
+                        finished=False
+                    )
+                elif part.function_response:
+                    response = AiStreamResponse(
+                        type= part.function_response.name,
+                        text=f"{part.function_response.name}",
+                        finished=True
+                    )
+                elif part.tool_call is not None:
+                    response = AiStreamResponse(
+                        type= part.tool_call.tool_type.name.lower(),
+                        text=f"{part.tool_call.tool_type.name} : {', '.join(part.tool_call.args.get('queries', []))}",
+                        finished=False
+                    )
+                elif part.tool_response:
+                    response = AiStreamResponse(
+                        type= part.tool_response.tool_type.name,
+                        text=f"{part.tool_response.tool_type.name}",
+                        finished=True
+                    )
+                elif part.text:
+                    if part.thought:
+                        response = AiStreamResponse(
+                            type="thinking",
+                            text=f"Thinking...",
+                            finished=True
+                        )
+                    else:
+                        response = AiStreamResponse(
+                            type= "text",
+                            text=f"{part.text}",
+                            finished=True
+                        )
+                else:
+                    print("---------------------------unknown: ", part)
 
-            if event.usage_metadata and event.usage_metadata.total_token_count:
-                token_usage = event.usage_metadata
+                yield response.model_dump_json()
 
-        return AgentResponse(
-            text=response_text,
-            token=token_usage
-        )
 
     async def get_history(self):
         session = await session_service.get_session(

@@ -12,3 +12,8 @@ class AiResponse(BaseModel):
 
 class StateDelta(BaseModel):
     notebook_id: int
+
+class AiStreamResponse(BaseModel):
+    type: str
+    text: str
+    finished: bool

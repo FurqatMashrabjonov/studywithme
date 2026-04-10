@@ -1,5 +1,6 @@
-from typing import List, Any
-
+from typing import List
+from google.adk.planners import BuiltInPlanner
+from google.genai import types
 from google.adk.agents import Agent
 from google.genai.types import GenerateContentConfig
 
@@ -20,7 +21,13 @@ class AgentInterface:
             instruction=self.instruction,
             tools=self.tools,
             generate_content_config=self.generate_content_config,
-            sub_agents=self.sub_agents
+            sub_agents=self.sub_agents,
+            planner=BuiltInPlanner(
+                thinking_config=types.ThinkingConfig(
+                    include_thoughts=True,  # Surfaces thoughts in events
+                    thinking_budget=2048,  # Sets maximum reasoning tokens
+                )
+            )
         )
 
     def get_agent(self):

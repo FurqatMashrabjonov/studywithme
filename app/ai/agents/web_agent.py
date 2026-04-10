@@ -1,29 +1,14 @@
+from google.adk.agents import LlmAgent
 from google.adk.tools import google_search
 from google.adk.tools.load_web_page import load_web_page
 
-from .base import AgentInterface
-from google.genai.types import GenerateContentConfig, ToolConfig, FunctionCallingConfig, FunctionCallingConfigMode
-
-
-class WebAgent(AgentInterface):
-    name = "WebAgent"
-    model = "gemini-3.1-flash-lite-preview"
-    instruction = """
-        Sen internetdan ma'lumot qidirib beruvchi yordamchi agentsan.
-
-        Vazifang:
-        - Foydalanuvchi so'ragan mavzu bo'yicha google_search orqali eng yangi va ishonchli ma'lumotlarni top
-        - Bir nechta qidiruv so'rovlari orqali to'liq va aniq ma'lumot yig'
-        - Topilgan ma'lumotlarni o'zbek tilida tushunarli va tizimli tarzda taqdim et
-        - Manbalarni ko'rsat va ma'lumotning qanchalik yangiligini bildir
-        - Agar ma'lumot topilmasa, foydalanuvchiga aniq ayt va boshqa usulda qidirishni taklif qil
-    """
-    tools = [google_search, load_web_page]
-    generate_content_config = GenerateContentConfig(
-        tool_config=ToolConfig(
-            function_calling_config=FunctionCallingConfig(
-                mode=FunctionCallingConfigMode.AUTO
-            ),
-            include_server_side_tool_invocations=True
-        ),
-    )
+web_agent = LlmAgent(
+    name="WebAgent",
+    model="gemini-2.0-flash",
+    instruction="""
+        You are a web researcher.
+        Use google_search to search, load_web_page to read URLs.
+        Always return what you found.
+    """,
+    tools=[google_search, load_web_page],
+)
