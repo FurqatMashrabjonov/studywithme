@@ -16,12 +16,10 @@ router = APIRouter()
 async def chat(
         request: AiRequest,
         user: User = Depends(get_request_user),
-        notebook: Notebook = Depends(get_valid_notebook)
+        notebook: Notebook = Depends(get_valid_notebook),
 ):
     orchestrator = Orchestrator(user_id=str(user.id), session_id=str(notebook.uid))
-    state_delta = StateDelta(
-        notebook_id=notebook.id
-    )
+    state_delta = StateDelta(notebook_id=notebook.id)
 
     return StreamingResponse(
         orchestrator.call(request.message, state_delta=state_delta),

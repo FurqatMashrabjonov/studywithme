@@ -5,6 +5,7 @@ from app.models import Notebook
 from .service_dependency import NotebookServiceDep
 from .service_dependency import NoteServiceDep
 from .security_dependency import get_request_user
+from app.dependencies.service_dependency import FlashcardServiceDep
 
 
 async def get_valid_notebook(
@@ -21,5 +22,14 @@ async def get_valid_note(
         notebook: Notebook = Depends(get_valid_notebook),
 ):
     notebook = await service.get_note_details(note_id, notebook.id)
+
+    return notebook
+
+async def get_valid_flashcard(
+        service: FlashcardServiceDep,
+        flashcard_id: int,
+        notebook: Notebook = Depends(get_valid_notebook),
+):
+    notebook = await service.get_flashcard_details(flashcard_id, notebook.id)
 
     return notebook

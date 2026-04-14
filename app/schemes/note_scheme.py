@@ -29,6 +29,7 @@ class NoteUpdateRequest(BaseNote):
 class NoteListResource(BaseNote):
     id: int
     title: str
+    type: str
     created_at: datetime
 
     @computed_field

@@ -6,9 +6,14 @@ from app.ai.scheme import FlashcardWrapper, Flashcard, QuizWrapper, QuizQuestion
 from app.core.config import settings
 import os
 from datetime import datetime
+import time
 from google.genai import types
+from app.repositories.flashcard_repository import FlashcardRepository
+from app.core.db import AsyncSessionLocal
+from app.services.flashcard_service import FlashcardService
 
-def flashcard(title: str, cards: list[dict], tool_context: ToolContext) -> dict:
+
+async def flashcard(title: str, cards: list[dict], tool_context: ToolContext) -> dict:
     """
     Creates flashcards for studying.
 
@@ -23,11 +28,15 @@ def flashcard(title: str, cards: list[dict], tool_context: ToolContext) -> dict:
     adapter = TypeAdapter(List[Flashcard])
     validated_cards = adapter.validate_python(cards)
 
-    print(f"Nomi: {title}")
-    for card in validated_cards:
-        print(f"Savol: {card.question}: {card.answer}")
+    async with AsyncSessionLocal() as session:
+        repository = FlashcardRepository(db=session)
+        service = FlashcardService(repository=repository)
 
-    print("Notebook uid: ", tool_context.state.get('notebook_id'))
+        await service.create(
+            notebook_id=tool_context.state.get("notebook_id", None),
+            title=title,
+            cards=[card.model_dump() for card in validated_cards]
+        )
 
     return {"status": "success", "count": len(validated_cards)}
 
@@ -156,3 +165,24 @@ def artifact_finder(subject: str) -> dict:
         "resources": resources,
         "urls": [r["url"] for r in resources]
     }
+
+def deep_research():
+    client = genai.Client(api_key=settings.GOOGLE_API_KEY)
+
+    interaction = client.interactions.create(
+        input="Research the best artifacts and wesites, youtube videos to learn python programming language in uzbek language",
+        agent='deep-research-pro-preview-12-2025',
+        background=True
+    )
+
+    print(f"Research started: {interaction.id}")
+
+    while True:
+        interaction = client.interactions.get(interaction.id)
+        if interaction.status == "completed":
+            print(interaction.outputs[-1].text)
+            break
+        elif interaction.status == "failed":
+            print(f"Research failed: {interaction.error}")
+            break
+        time.sleep(10)

@@ -11,7 +11,7 @@ class NoteService(BaseService):
     def __init__(self, repository: NoteRepositoryDep):
         self.repository = repository
 
-    async def get_notes_by_notebook(self, notebook_id: int):
+    async def get_notes_by_notebook_id(self, notebook_id: int):
         notes = await self.repository.get_by_notebook_id(notebook_id)
 
         return notes
